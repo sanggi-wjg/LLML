@@ -5,6 +5,8 @@
       "WebFetch",
 
       "Bash(source \"$HOME/.cargo/env\"*)",
+      "Bash(source \"$HOME/.cargo/env\")",
+      "Bash(source $HOME/.cargo/env)",
 
       "Bash(cargo build:*)",
       "Bash(cargo test:*)",
@@ -31,6 +33,10 @@
       "Bash(git stash:*)",
       "Bash(git init:*)",
       "Bash(git rev-parse:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr:*)",
+      "Bash(git pull:*)",
 
       "Bash(ls:*)",
       "Bash(mkdir:*)",
@@ -43,6 +49,7 @@
       "Bash(head:*)",
       "Bash(tail:*)",
       "Bash(sort:*)",
+      "Bash(xxd)",
 
       "Bash(python3:*)",
 
