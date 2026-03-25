@@ -1,0 +1,11 @@
+;; Mutable bindings with set
+;; Tests: (let mut) declares a mutable binding; (set) reassigns it; reads reflect the new value
+(do
+  (let mut $x : @I32 5)
+  ($print ($to_str $x))
+  (set $x 10)
+  ($print ($to_str $x))
+  (let mut $msg : @Str "before")
+  ($print $msg)
+  (set $msg "after")
+  ($print $msg))

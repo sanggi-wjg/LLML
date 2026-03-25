@@ -1,0 +1,7 @@
+;; LLML Hello World
+;; Demonstrates basic function definition and calls
+
+(fn $greet (: @Str -> @Nil) ($name : @Str)
+  ($print (+ "Hello, " (+ $name "!"))))
+
+($greet "LLML")

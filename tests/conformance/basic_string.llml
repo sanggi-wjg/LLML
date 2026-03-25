@@ -1,0 +1,6 @@
+;; Basic string operations
+(do
+  ($print "hello world")
+  ($print ($str_concat "foo" "bar"))
+  ($print ($to_str ($len "abcde")))
+  ($print ($str_concat ($str_concat "a" "b") "c")))

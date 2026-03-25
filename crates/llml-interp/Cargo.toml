@@ -1,0 +1,11 @@
+[package]
+name = "llml-interp"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+llml-lexer = { path = "../llml-lexer" }
+llml-parser = { path = "../llml-parser" }
+miette.workspace = true
+thiserror.workspace = true
+lasso.workspace = true

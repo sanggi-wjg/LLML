@@ -1,0 +1,10 @@
+;; Recursive fibonacci
+(do
+  (fn $fib (: @I32 -> @I32) ($n : @I32)
+    (if (<= $n 1)
+      $n
+      (+ ($fib (- $n 1)) ($fib (- $n 2)))))
+  ($print ($to_str ($fib 0)))
+  ($print ($to_str ($fib 1)))
+  ($print ($to_str ($fib 5)))
+  ($print ($to_str ($fib 10))))

@@ -1,0 +1,88 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+
+      "Bash(source \"$HOME/.cargo/env\"*)",
+
+      "Bash(cargo build:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo run:*)",
+      "Bash(cargo check:*)",
+      "Bash(cargo doc:*)",
+      "Bash(cargo bench:*)",
+      "Bash(cargo clean:*)",
+      "Bash(cargo --version:*)",
+      "Bash(cargo install:*)",
+
+      "Bash(rustc:*)",
+      "Bash(rustup:*)",
+
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git stash:*)",
+      "Bash(git init:*)",
+      "Bash(git rev-parse:*)",
+
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(which:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sort:*)",
+
+      "Bash(python3:*)",
+
+      "Bash(./target/debug/llml:*)",
+      "Bash(./target/release/llml:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout -- .:*)",
+      "Bash(git clean -f:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(cargo publish:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // empty' | { read -r f; case \"$f\" in *.rs) source \"$HOME/.cargo/env\" && cargo fmt --all 2>/dev/null || true ;; esac; }",
+            "timeout": 30,
+            "statusMessage": "Running cargo fmt..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "source \"$HOME/.cargo/env\" 2>/dev/null; echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"LLML Project Status: '\"$(cargo test --workspace 2>&1 | tail -1 | tr '\"' \"'\")\"'. Conformance tests: '\"$(ls tests/conformance/*.llml 2>/dev/null | wc -l | tr -d ' ')\"' files. Crates: '\"$(ls crates/ 2>/dev/null | tr '\\n' ', ')\"'\"}}'",
+            "timeout": 15,
+            "statusMessage": "Checking LLML project status..."
+          }
+        ]
+      }
+    ]
+  }
+}

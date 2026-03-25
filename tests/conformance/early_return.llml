@@ -1,0 +1,17 @@
+;; Early return with ret keyword
+;; Tests: (ret expr) exits a function immediately; expressions after ret are not evaluated
+(do
+  (fn $classify (: @I32 -> @Str) ($n : @I32)
+    (do
+      (if (< $n 0) (ret "negative") nil)
+      (if (= $n 0) (ret "zero") nil)
+      "positive"))
+  ($print ($classify (- 5)))
+  ($print ($classify 0))
+  ($print ($classify 7))
+  (fn $first_positive (: @I32 @I32 -> @I32) ($a : @I32) ($b : @I32)
+    (do
+      (if (> $a 0) (ret $a) nil)
+      $b))
+  ($print ($to_str ($first_positive (- 3) 42)))
+  ($print ($to_str ($first_positive 10 99))))

@@ -1,0 +1,7 @@
+;; Unary negation
+(do
+  ($print ($to_str (- 0 5)))
+  ($print ($to_str (- 0 (- 0 3))))
+  (let $x : @I32 7)
+  ($print ($to_str (- 0 $x)))
+  ($print ($to_str ($abs (- 0 42)))))

@@ -1,0 +1,18 @@
+;; Mutation with set across multiple assignments
+;; Tests: sequential set calls update the binding correctly; mutation visible to later expressions
+(do
+  (let mut $counter : @I32 0)
+  ($print ($to_str $counter))
+  (set $counter (+ $counter 1))
+  ($print ($to_str $counter))
+  (set $counter (+ $counter 1))
+  ($print ($to_str $counter))
+  (set $counter (* $counter 10))
+  ($print ($to_str $counter))
+  (fn $count_down (: @I32 -> @I32) ($n : @I32)
+    (if (<= $n 0)
+      0
+      (+ 1 ($count_down (- $n 1)))))
+  (let mut $result : @I32 0)
+  (set $result ($count_down 5))
+  ($print ($to_str $result)))

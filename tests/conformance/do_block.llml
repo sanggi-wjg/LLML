@@ -1,0 +1,10 @@
+;; Do block sequencing with let bindings
+(do
+  (let $a : @I32 1)
+  ($print ($to_str $a))
+  (let $b : @I32 (+ $a 1))
+  ($print ($to_str $b))
+  (let $c : @I32 (+ $a $b))
+  ($print ($to_str $c))
+  (let $d : @Str ($str_concat "result: " ($to_str $c)))
+  ($print $d))

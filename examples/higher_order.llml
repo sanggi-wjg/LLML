@@ -1,0 +1,21 @@
+;; LLML Higher-Order Functions
+;; Demonstrates closures and function composition
+
+;; Apply a function twice
+(fn $twice (: (: @I32 -> @I32) @I32 -> @I32)
+  ($f : (: @I32 -> @I32)) ($x : @I32)
+  ($f ($f $x)))
+
+;; Increment
+(fn $inc (: @I32 -> @I32) ($n : @I32)
+  (+ $n 1))
+
+;; Double
+(fn $double (: @I32 -> @I32) ($n : @I32)
+  (* $n 2))
+
+;; twice(inc, 5)  => inc(inc(5)) => 7
+($print ($to_str ($twice $inc 5)))
+
+;; twice(double, 3)  => double(double(3)) => 12
+($print ($to_str ($twice $double 3)))

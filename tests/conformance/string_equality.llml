@@ -1,0 +1,10 @@
+;; String comparison
+(do
+  ($print ($to_str (= "hello" "hello")))
+  ($print ($to_str (= "hello" "world")))
+  ($print ($to_str (!= "foo" "bar")))
+  ($print ($to_str (!= "same" "same")))
+  (let $a : @Str "test")
+  (let $b : @Str "test")
+  ($print ($to_str (= $a $b)))
+  ($print ($to_str (= $a "other"))))

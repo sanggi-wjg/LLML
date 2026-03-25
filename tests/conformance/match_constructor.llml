@@ -1,0 +1,13 @@
+;; Pattern matching on constructors (@Some/@None)
+(do
+  (ty @MyOption (sum
+    (@Some $val : @I32)
+    @None))
+  (fn $unwrap_or (: @MyOption @I32 -> @I32) ($opt : @MyOption) ($default : @I32)
+    (mat $opt
+      ((@Some $v) $v)
+      (@None $default)))
+  (let $a : @MyOption (@Some 42))
+  (let $b : @MyOption @None)
+  ($print ($to_str ($unwrap_or $a 0)))
+  ($print ($to_str ($unwrap_or $b 0))))

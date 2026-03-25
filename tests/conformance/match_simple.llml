@@ -1,0 +1,12 @@
+;; Pattern matching on integers
+(do
+  (fn $describe (: @I32 -> @Str) ($n : @I32)
+    (mat $n
+      (0 "zero")
+      (1 "one")
+      (2 "two")
+      ($x "other")))
+  ($print ($describe 0))
+  ($print ($describe 1))
+  ($print ($describe 2))
+  ($print ($describe 42)))

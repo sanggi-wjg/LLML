@@ -1,0 +1,8 @@
+;; Let bindings in do blocks
+(do
+  (let $x : @I32 10)
+  (let $y : @I32 20)
+  (let $z : @I32 (+ $x $y))
+  ($print ($to_str $z))
+  (let $a : @Str "hello")
+  ($print $a))

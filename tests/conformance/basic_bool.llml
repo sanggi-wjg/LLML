@@ -1,0 +1,8 @@
+;; Basic boolean logic
+(do
+  ($print ($to_str (&& true true)))
+  ($print ($to_str (&& true false)))
+  ($print ($to_str (|| false true)))
+  ($print ($to_str (|| false false)))
+  ($print ($to_str ($not true)))
+  ($print ($to_str ($not false))))

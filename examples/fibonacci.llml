@@ -1,0 +1,19 @@
+;; LLML Fibonacci
+;; Recursive fibonacci with pattern matching
+
+(fn $fib (: @I32 -> @I32)
+  ($n : @I32)
+  (if (<= $n 1) $n (+ ($fib (- $n 1)) ($fib (- $n 2)))))
+
+;; Print fibonacci numbers 0 through 10
+($print ($to_str ($fib 0)))
+($print ($to_str ($fib 1)))
+($print ($to_str ($fib 2)))
+($print ($to_str ($fib 3)))
+($print ($to_str ($fib 4)))
+($print ($to_str ($fib 5)))
+($print ($to_str ($fib 6)))
+($print ($to_str ($fib 7)))
+($print ($to_str ($fib 8)))
+($print ($to_str ($fib 9)))
+($print ($to_str ($fib 10)))

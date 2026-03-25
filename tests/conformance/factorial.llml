@@ -1,0 +1,10 @@
+;; Factorial function
+(do
+  (fn $factorial (: @I32 -> @I32) ($n : @I32)
+    (if (<= $n 1)
+      1
+      (* $n ($factorial (- $n 1)))))
+  ($print ($to_str ($factorial 0)))
+  ($print ($to_str ($factorial 1)))
+  ($print ($to_str ($factorial 5)))
+  ($print ($to_str ($factorial 10))))

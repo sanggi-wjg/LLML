@@ -1,0 +1,8 @@
+;; If expressions
+(do
+  ($print ($to_str (if true 1 2)))
+  ($print ($to_str (if false 1 2)))
+  ($print ($to_str (if (> 5 3) 100 200)))
+  ($print (if (= 1 1) "equal" "not equal"))
+  (let $x : @I32 10)
+  ($print ($to_str (if (> $x 5) (* $x 2) $x))))

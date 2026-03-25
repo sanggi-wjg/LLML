@@ -1,0 +1,18 @@
+;; Wildcard pattern in match expressions
+;; Tests: _ matches any value and discards it; used as exhaustive catch-all
+(do
+  (fn $describe (: @I32 -> @Str) ($n : @I32)
+    (mat $n
+      (0 "zero")
+      (1 "one")
+      (_ "something else")))
+  ($print ($describe 0))
+  ($print ($describe 1))
+  ($print ($describe 99))
+  ($print ($describe (- 7)))
+  (fn $is_none (: @Bool) ($opt : @Bool)
+    (mat $opt
+      (true "got true")
+      (_ "not true")))
+  ($print ($is_none true))
+  ($print ($is_none false)))

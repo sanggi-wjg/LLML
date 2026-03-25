@@ -1,0 +1,6 @@
+;; Basic float arithmetic
+(do
+  ($print ($to_str (+ 2.5 3.5)))
+  ($print ($to_str (- 10.0 4.5)))
+  ($print ($to_str (* 3.0 7.0)))
+  ($print ($to_str (/ 15.0 4.0))))

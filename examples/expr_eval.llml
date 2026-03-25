@@ -1,0 +1,25 @@
+;; LLML Expression Evaluator
+;; Demonstrates algebraic data types and pattern matching
+
+;; Define an expression tree ADT
+(ty @Expr (sum
+  (@Num $val : @F64)
+  (@Add $l : @Expr $r : @Expr)
+  (@Mul $l : @Expr $r : @Expr)
+  (@Neg $e : @Expr)))
+
+;; Evaluate an expression tree
+(fn $eval (: @Expr -> @F64) ($e : @Expr)
+  (mat $e
+    ((@Num $v) $v)
+    ((@Add $l $r) (+ ($eval $l) ($eval $r)))
+    ((@Mul $l $r) (* ($eval $l) ($eval $r)))
+    ((@Neg $inner) (- ($eval $inner)))))
+
+;; Build: (1.0 + 2.0) * 3.0
+(let $expr : @Expr
+  (@Mul
+    (@Add (@Num 1.0) (@Num 2.0))
+    (@Num 3.0)))
+
+($print (+ "Result: " ($to_str ($eval $expr))))

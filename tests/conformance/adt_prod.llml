@@ -1,0 +1,10 @@
+;; Algebraic product types (structs)
+(do
+  (ty @Point (prod $x : @I32 $y : @I32))
+  (let $p : @Point (@Point 3 4))
+  (mat $p
+    ((@Point $x $y)
+      (do
+        ($print ($to_str $x))
+        ($print ($to_str $y))
+        ($print ($to_str (+ (* $x $x) (* $y $y))))))))

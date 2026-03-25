@@ -1,0 +1,7 @@
+;; Basic integer arithmetic
+(do
+  ($print ($to_str (+ 2 3)))
+  ($print ($to_str (- 10 4)))
+  ($print ($to_str (* 3 7)))
+  ($print ($to_str (/ 15 3)))
+  ($print ($to_str (% 10 3))))

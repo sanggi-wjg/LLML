@@ -1,0 +1,13 @@
+;; Algebraic sum types
+(do
+  (ty @Shape (sum
+    (@Circle $r : @F64)
+    (@Rectangle $w : @F64 $h : @F64)))
+  (fn $describe_shape (: @Shape -> @Str) ($s : @Shape)
+    (mat $s
+      ((@Circle $r) (+ "circle with radius " ($to_str $r)))
+      ((@Rectangle $w $h) (+ "rectangle " (+ ($to_str $w) (+ " x " ($to_str $h)))))))
+  (let $c : @Shape (@Circle 5.0))
+  (let $r : @Shape (@Rectangle 3.0 4.0))
+  ($print ($describe_shape $c))
+  ($print ($describe_shape $r)))

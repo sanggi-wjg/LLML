@@ -1,0 +1,16 @@
+;; All comparison operators
+(do
+  ($print ($to_str (= 1 1)))
+  ($print ($to_str (= 1 2)))
+  ($print ($to_str (!= 1 2)))
+  ($print ($to_str (!= 1 1)))
+  ($print ($to_str (< 1 2)))
+  ($print ($to_str (< 2 1)))
+  ($print ($to_str (> 2 1)))
+  ($print ($to_str (> 1 2)))
+  ($print ($to_str (<= 1 1)))
+  ($print ($to_str (<= 1 2)))
+  ($print ($to_str (<= 2 1)))
+  ($print ($to_str (>= 1 1)))
+  ($print ($to_str (>= 2 1)))
+  ($print ($to_str (>= 1 2))))

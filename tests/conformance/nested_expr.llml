@@ -1,0 +1,6 @@
+;; Deeply nested arithmetic
+(do
+  ($print ($to_str (+ (* 2 (+ 3 4)) (- 10 (* 2 3)))))
+  ($print ($to_str (* (+ 1 2) (+ 3 (* 4 5)))))
+  ($print ($to_str (/ (+ (* 3 4) (* 5 6)) (- 7 4))))
+  ($print ($to_str (+ (+ (+ 1 2) (+ 3 4)) (+ (+ 5 6) (+ 7 8))))))

@@ -1,0 +1,30 @@
+;; Expression evaluator: ADT + pattern matching + recursion
+(do
+  (ty @Expr (sum
+    (@Num $n : @I32)
+    (@Add $a : @Expr $b : @Expr)
+    (@Mul $a : @Expr $b : @Expr)
+    (@Neg $a : @Expr)))
+
+  (fn $eval (: @Expr -> @I32) ($e : @Expr)
+    (mat $e
+      ((@Num $n) $n)
+      ((@Add $a $b) (+ ($eval $a) ($eval $b)))
+      ((@Mul $a $b) (* ($eval $a) ($eval $b)))
+      ((@Neg $a) (- 0 ($eval $a)))))
+
+  ;; 2 + 3 = 5
+  (let $e1 : @Expr (@Add (@Num 2) (@Num 3)))
+  ($print ($to_str ($eval $e1)))
+
+  ;; (2 + 3) * 4 = 20
+  (let $e2 : @Expr (@Mul (@Add (@Num 2) (@Num 3)) (@Num 4)))
+  ($print ($to_str ($eval $e2)))
+
+  ;; -(2 * 3) + 10 = 4
+  (let $e3 : @Expr (@Add (@Neg (@Mul (@Num 2) (@Num 3))) (@Num 10)))
+  ($print ($to_str ($eval $e3)))
+
+  ;; (1 + 2) * (3 + 4) = 21
+  (let $e4 : @Expr (@Mul (@Add (@Num 1) (@Num 2)) (@Add (@Num 3) (@Num 4))))
+  ($print ($to_str ($eval $e4))))

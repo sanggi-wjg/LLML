@@ -1,0 +1,15 @@
+[package]
+name = "llml-cli"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "llml"
+path = "src/main.rs"
+
+[dependencies]
+llml-lexer = { path = "../llml-lexer" }
+llml-parser = { path = "../llml-parser" }
+llml-interp = { path = "../llml-interp" }
+clap.workspace = true
+miette = { workspace = true, features = ["fancy"] }

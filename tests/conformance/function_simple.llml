@@ -1,0 +1,9 @@
+;; Simple function definition and call
+(do
+  (fn $add (: @I32 @I32 -> @I32) ($a : @I32) ($b : @I32)
+    (+ $a $b))
+  (fn $double (: @I32 -> @I32) ($n : @I32)
+    (* $n 2))
+  ($print ($to_str ($add 3 4)))
+  ($print ($to_str ($double 5)))
+  ($print ($to_str ($add ($double 3) ($double 4)))))

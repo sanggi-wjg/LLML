@@ -1,0 +1,11 @@
+;; Higher-order functions
+(do
+  (fn $apply (: (: @I32 -> @I32) @I32 -> @I32) ($f : (: @I32 -> @I32)) ($x : @I32)
+    ($f $x))
+  (fn $double (: @I32 -> @I32) ($n : @I32)
+    (* $n 2))
+  (fn $square (: @I32 -> @I32) ($n : @I32)
+    (* $n $n))
+  ($print ($to_str ($apply $double 5)))
+  ($print ($to_str ($apply $square 4)))
+  ($print ($to_str ($apply $double ($apply $square 3)))))
