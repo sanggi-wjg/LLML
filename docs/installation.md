@@ -130,6 +130,7 @@ LLML/
     fibonacci.llml
     expr_eval.llml
     higher_order.llml
+    llm_generated.llml
   tests/
     conformance/           # Conformance test pairs (.llml + .expected)
   docs/                    # Documentation

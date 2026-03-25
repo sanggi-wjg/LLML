@@ -5,6 +5,4 @@ edition.workspace = true
 
 [dependencies]
 logos.workspace = true
-miette.workspace = true
 thiserror.workspace = true
-lasso.workspace = true

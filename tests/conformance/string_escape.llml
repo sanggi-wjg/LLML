@@ -1,7 +1,6 @@
 ;; String escape sequences
-;; Tests: backslash escape sequences in string literals are recognized by the lexer
-;; Note: the lexer accepts escape sequences in the grammar but stores them as raw characters
-;; This test documents the current behavior of string literals containing backslash sequences
+;; Tests: backslash escape sequences in string literals are correctly processed
+;; \n → newline, \t → tab, \\ → backslash, \" → double-quote
 (do
   ($print "hello \"world\"")
   ($print "she said \"hi\"")
