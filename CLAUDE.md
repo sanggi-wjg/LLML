@@ -30,12 +30,24 @@ Source (.llml) → Lexer (logos) → Parser (recursive descent) → AST → Inte
 - Comments: `;;`
 - Built-in functions: `$print` `$to_str` `$str_concat` `$len` `$not` `$abs`
 
+## Git Workflow
+All changes follow this flow unless explicitly told otherwise:
+1. **Branch** — create a feature branch from `main` (`feat/...`, `fix/...`, `ci/...`, `docs/...`)
+2. **Develop** — implement changes, ensure `cargo test --workspace` and conformance tests pass
+3. **Commit** — concise commit message, `Co-Authored-By` trailer
+4. **Push** — `git push -u origin <branch>`
+5. **PR** — `gh pr create` with summary and test plan
+6. **Merge** — wait for user approval or explicit "merge" instruction
+
+Do NOT push directly to `main`. Always go through a PR.
+
 ## Conventions
 - Each crate must compile independently
 - All public APIs must have doc comments
 - Conformance tests live in `tests/conformance/` as `.llml` + `.expected` pairs
 - LLML source files use `.llml` extension
 - When adding new language features: update SPEC.md → write conformance tests → implement
+- Before committing: `cargo fmt --all`, `cargo clippy --workspace -- -D warnings`, `cargo test --workspace` must all pass
 
 ## Documentation
 - `SPEC.md` — Language specification (EBNF grammar, type system, semantics)
