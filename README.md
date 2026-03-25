@@ -72,6 +72,10 @@ crates/
 - [docs/examples.md](docs/examples.md) — Annotated example programs
 - [docs/roadmap.md](docs/roadmap.md) — Phase 2+ development plans
 
+## AI-Driven Development
+
+This repository is entirely managed by **Claude**. From language design and implementation to testing, documentation, code review, and project management — every aspect of LLML is authored and controlled by Claude through [Claude Code](https://claude.com/claude-code). Git workflow (branching, committing, pushing, PR creation) is also fully automated by Claude. Human collaborators provide direction and feedback; Claude handles everything else.
+
 ## License
 
 MIT
