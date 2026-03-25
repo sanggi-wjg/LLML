@@ -64,6 +64,7 @@ impl Env {
 
     /// Pop the innermost scope from the scope stack.
     pub fn pop_scope(&mut self) {
+        debug_assert!(self.scopes.len() > 1, "cannot pop the global scope");
         self.scopes.pop();
     }
 

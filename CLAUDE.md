@@ -4,7 +4,7 @@ A programming language optimized for LLMs. Prioritizes token efficiency and stru
 
 ## Build & Test
 - `cargo build --workspace` — build all crates
-- `cargo test --workspace` — unit tests (lexer 8, parser 12, interp 28)
+- `cargo test --workspace` — unit tests (lexer 8, parser 12, interp 30)
 - `cargo fmt --all` — format code (PostToolUse hook auto-runs on .rs file edits)
 - `cargo clippy --workspace` — lint
 - `cargo run -p llml-cli -- run <file.llml>` — run an LLML program
@@ -65,7 +65,7 @@ Do NOT push directly to `main`. Always go through a PR.
 - `-` operator: `(- $x)` → unary negation, `(- $a $b)` → binary subtraction (distinguished by argument count)
 
 ## Custom Commands
-- `/project:test-conformance` — run all 20 conformance tests
+- `/project:test-conformance` — run all 25 conformance tests
 - `/project:parse-debug <file>` — show full Lex→Parse→Run pipeline
 - `/project:check-all` — fmt + clippy + test + conformance full QA
 - `/project:add-test <desc>` — auto-generate a conformance test
@@ -80,7 +80,7 @@ Do NOT push directly to `main`. Always go through a PR.
 - `project-reviewer` — comprehensive project review (code quality, spec consistency, docs, tests, config)
 
 ## Development Phases
-- **Phase 1 (complete)**: Core MVP — Lexer, Parser, Interpreter, CLI, 20 conformance tests
+- **Phase 1 (complete)**: Core MVP — Lexer, Parser, Interpreter, CLI, 25 conformance tests
 - **Phase 2 (next)**: Bytecode VM + Type Checker — `llml-types`, `llml-mir`, `llml-vm`
 - **Phase 3**: Tooling — LSP, WASM codegen, JSON structured output
 - **Phase 4**: Optimization — MIR passes, SMT verification, incremental compilation

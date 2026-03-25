@@ -1,6 +1,33 @@
 use logos::Logos;
 use std::fmt;
 
+/// Process escape sequences in a string literal.
+///
+/// Converts `\n` → newline, `\t` → tab, `\\` → backslash, `\"` → double-quote.
+/// Unknown escape sequences are kept as-is.
+fn unescape(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut chars = s.chars();
+    while let Some(c) = chars.next() {
+        if c == '\\' {
+            match chars.next() {
+                Some('n') => out.push('\n'),
+                Some('t') => out.push('\t'),
+                Some('\\') => out.push('\\'),
+                Some('"') => out.push('"'),
+                Some(other) => {
+                    out.push('\\');
+                    out.push(other);
+                }
+                None => out.push('\\'),
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
 /// Span in source code: byte offset range [start, end)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Span {
@@ -162,8 +189,8 @@ pub enum Token {
     // String literal
     #[regex(r#""([^"\\]|\\.)*""#, |lex| {
         let s = lex.slice();
-        // Strip surrounding quotes
-        s[1..s.len()-1].to_string()
+        // Strip surrounding quotes and process escape sequences
+        unescape(&s[1..s.len()-1])
     })]
     Str(String),
 
