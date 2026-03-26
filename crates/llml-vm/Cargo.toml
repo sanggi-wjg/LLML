@@ -1,5 +1,5 @@
 [package]
-name = "llml-interp"
+name = "llml-vm"
 version.workspace = true
 edition.workspace = true
 
@@ -8,3 +8,5 @@ llml-lexer = { path = "../llml-lexer" }
 llml-parser = { path = "../llml-parser" }
 llml-stdlib = { path = "../llml-stdlib" }
 thiserror.workspace = true
+serde = { workspace = true }
+serde_json = { workspace = true }

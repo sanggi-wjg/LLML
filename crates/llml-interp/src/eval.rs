@@ -1,5 +1,6 @@
 use crate::value::{Env, FnClosure, SetError, Value};
 use llml_parser::ast::*;
+use llml_stdlib::BuiltinRegistry;
 
 /// Interpreter error.
 #[derive(Debug, Clone, thiserror::Error)]
@@ -39,38 +40,26 @@ type Result<T> = std::result::Result<T, EvalError>;
 pub struct Interpreter {
     env: Env,
     output: Vec<String>,
+    builtins: BuiltinRegistry,
 }
 
 impl Interpreter {
     pub fn new() -> Self {
-        let mut interp = Self {
-            env: Env::new(),
+        let builtins = BuiltinRegistry::standard();
+        let mut env = Env::new();
+        // Register all built-in function names in the environment
+        for name in builtins.names() {
+            env.define(name.to_string(), Value::BuiltinFn(name.to_string()));
+        }
+        Self {
+            env,
             output: Vec::new(),
-        };
-        interp.register_builtins();
-        interp
+            builtins,
+        }
     }
 
     pub fn output(&self) -> &[String] {
         &self.output
-    }
-
-    fn register_builtins(&mut self) {
-        // Register built-in functions
-        self.env
-            .define("print".to_string(), Value::BuiltinFn("print".to_string()));
-        self.env
-            .define("to_str".to_string(), Value::BuiltinFn("to_str".to_string()));
-        self.env.define(
-            "str_concat".to_string(),
-            Value::BuiltinFn("str_concat".to_string()),
-        );
-        self.env
-            .define("len".to_string(), Value::BuiltinFn("len".to_string()));
-        self.env
-            .define("not".to_string(), Value::BuiltinFn("not".to_string()));
-        self.env
-            .define("abs".to_string(), Value::BuiltinFn("abs".to_string()));
     }
 
     /// Execute a complete program.
@@ -309,80 +298,20 @@ impl Interpreter {
     }
 
     fn call_builtin(&mut self, name: &str, args: Vec<Value>) -> Result<Value> {
-        match name {
-            "print" => {
-                if args.len() != 1 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "print".to_string(),
-                        expected: 1,
-                        got: args.len(),
-                    });
-                }
-                self.output.push(args[0].to_string());
-                Ok(Value::Nil)
-            }
-            "to_str" => {
-                if args.len() != 1 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "to_str".to_string(),
-                        expected: 1,
-                        got: args.len(),
-                    });
-                }
-                Ok(Value::Str(args[0].to_string()))
-            }
-            "str_concat" => {
-                if args.len() != 2 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "str_concat".to_string(),
-                        expected: 2,
-                        got: args.len(),
-                    });
-                }
-                Ok(Value::Str(format!("{}{}", args[0], args[1])))
-            }
-            "len" => {
-                if args.len() != 1 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "len".to_string(),
-                        expected: 1,
-                        got: args.len(),
-                    });
-                }
-                match &args[0] {
-                    Value::Str(s) => Ok(Value::Int(s.len() as i64)),
-                    _ => Err(EvalError::TypeError("len expects @Str".to_string())),
-                }
-            }
-            "not" => {
-                if args.len() != 1 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "not".to_string(),
-                        expected: 1,
-                        got: args.len(),
-                    });
-                }
-                match &args[0] {
-                    Value::Bool(b) => Ok(Value::Bool(!b)),
-                    _ => Err(EvalError::TypeError("not expects @Bool".to_string())),
-                }
-            }
-            "abs" => {
-                if args.len() != 1 {
-                    return Err(EvalError::ArityMismatch {
-                        name: "abs".to_string(),
-                        expected: 1,
-                        got: args.len(),
-                    });
-                }
-                match &args[0] {
-                    Value::Int(n) => Ok(Value::Int(n.abs())),
-                    Value::Float(n) => Ok(Value::Float(n.abs())),
-                    _ => Err(EvalError::TypeError("abs expects numeric type".to_string())),
-                }
-            }
-            _ => Err(EvalError::UndefinedVar(name.to_string())),
-        }
+        self.builtins
+            .call(name, &args, &mut self.output)
+            .map_err(|e| match e {
+                llml_stdlib::BuiltinError::ArityMismatch {
+                    name,
+                    expected,
+                    got,
+                } => EvalError::ArityMismatch {
+                    name,
+                    expected,
+                    got,
+                },
+                llml_stdlib::BuiltinError::TypeError(msg) => EvalError::TypeError(msg),
+            })
     }
 
     fn eval_binop(&self, op: BinOp, lhs: Value, rhs: Value) -> Result<Value> {
