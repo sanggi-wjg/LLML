@@ -71,6 +71,8 @@ Do NOT push directly to `main`. Always go through a PR.
 - `/project:add-test <desc>` — auto-generate a conformance test
 - `/project:run-llml <code>` — run an LLML program immediately
 - `/project:token-compare <program>` — compare token efficiency across languages
+- `/project:pr [hint]` — create feature branch, commit, push, open PR
+- `/project:pr-merge [PR#]` — verify CI, fix failures, merge PR
 
 ## Custom Agents
 - `spec-validator` — cross-reference SPEC.md ↔ test coverage
