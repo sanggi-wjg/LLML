@@ -11,5 +11,20 @@ path = "src/main.rs"
 llml-lexer = { path = "../llml-lexer" }
 llml-parser = { path = "../llml-parser" }
 llml-interp = { path = "../llml-interp" }
+llml-types = { path = "../llml-types" }
+llml-vm = { path = "../llml-vm" }
+llml-stdlib = { path = "../llml-stdlib" }
 clap.workspace = true
 miette = { workspace = true, features = ["fancy"] }
+serde_json.workspace = true
+rustyline.workspace = true
+
+[dev-dependencies]
+llml-lexer = { path = "../llml-lexer" }
+llml-parser = { path = "../llml-parser" }
+llml-interp = { path = "../llml-interp" }
+datatest-stable.workspace = true
+
+[[test]]
+name = "conformance"
+harness = false
