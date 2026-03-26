@@ -1,4 +1,6 @@
-use clap::{Parser, Subcommand};
+mod repl;
+
+use clap::{Parser, Subcommand, ValueEnum};
 use miette::{Result, miette};
 use std::path::PathBuf;
 
@@ -16,6 +18,12 @@ enum Commands {
     Run {
         /// Path to the .llml source file
         file: PathBuf,
+        /// Execution backend
+        #[arg(long, default_value = "interp")]
+        backend: Backend,
+        /// Enable execution trace (VM backend only)
+        #[arg(long)]
+        trace: bool,
     },
     /// Parse and display the AST of an LLML source file
     Parse {
@@ -27,15 +35,31 @@ enum Commands {
         /// Path to the .llml source file
         file: PathBuf,
     },
+    /// Start an interactive REPL
+    Repl,
+}
+
+/// Execution backend.
+#[derive(Debug, Clone, ValueEnum)]
+enum Backend {
+    /// Tree-walk interpreter (default)
+    Interp,
+    /// Bytecode VM
+    Vm,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Run { file } => cmd_run(&file),
+        Commands::Run {
+            file,
+            backend,
+            trace,
+        } => cmd_run(&file, backend, trace),
         Commands::Parse { file } => cmd_parse(&file),
         Commands::Lex { file } => cmd_lex(&file),
+        Commands::Repl => repl::run_repl(),
     }
 }
 
@@ -44,19 +68,31 @@ fn read_source(path: &PathBuf) -> Result<String> {
         .map_err(|e| miette!("cannot read file `{}`: {}", path.display(), e))
 }
 
-fn cmd_run(path: &PathBuf) -> Result<()> {
+fn cmd_run(path: &PathBuf, backend: Backend, trace: bool) -> Result<()> {
     let source = read_source(path)?;
 
     let program = llml_parser::parse(&source).map_err(|e| miette!("{e}"))?;
 
+    // Static type checking
+    if let Err(errors) = llml_types::check(&program) {
+        for err in &errors.errors {
+            eprintln!("type warning: {err}");
+        }
+    }
+
+    match backend {
+        Backend::Interp => run_interp(&program),
+        Backend::Vm => run_vm(&program, trace),
+    }
+}
+
+fn run_interp(program: &llml_parser::ast::Program) -> Result<()> {
     let mut interp = llml_interp::Interpreter::new();
-    match interp.exec_program(&program) {
+    match interp.exec_program(program) {
         Ok(val) => {
-            // Print captured output
             for line in interp.output() {
                 println!("{line}");
             }
-            // Print final value if not nil
             match &val {
                 llml_interp::Value::Nil => {}
                 v => println!("{v}"),
@@ -64,6 +100,34 @@ fn cmd_run(path: &PathBuf) -> Result<()> {
             Ok(())
         }
         Err(e) => Err(miette!("runtime error: {e}")),
+    }
+}
+
+fn run_vm(program: &llml_parser::ast::Program, trace: bool) -> Result<()> {
+    let limits = llml_vm::Limits {
+        trace,
+        ..Default::default()
+    };
+    match llml_vm::compile_and_run(program, limits) {
+        Ok(result) => {
+            for line in &result.output {
+                println!("{line}");
+            }
+            match &result.value {
+                llml_stdlib::Value::Nil => {}
+                v => println!("{v}"),
+            }
+            if let Some(trace) = &result.trace {
+                eprintln!("--- trace ({} steps) ---", trace.steps.len());
+                eprintln!(
+                    "{}",
+                    serde_json::to_string_pretty(trace).unwrap_or_default()
+                );
+            }
+            eprintln!("(executed in {} steps)", result.steps);
+            Ok(())
+        }
+        Err(e) => Err(miette!("vm error: {e}")),
     }
 }
 

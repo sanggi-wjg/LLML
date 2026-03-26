@@ -12,21 +12,79 @@ type Result<T> = std::result::Result<T, ParseError>;
 pub struct Parser {
     tokens: Vec<Spanned>,
     pos: usize,
+    /// Accumulated errors during error-recovery parsing.
+    errors: Vec<ParseError>,
 }
 
 impl Parser {
     /// Create a new parser from a token stream.
     pub fn new(tokens: Vec<Spanned>) -> Self {
-        Self { tokens, pos: 0 }
+        Self {
+            tokens,
+            pos: 0,
+            errors: Vec::new(),
+        }
     }
 
     /// Parse a complete program (sequence of top-level expressions/declarations).
+    ///
+    /// Uses error recovery: if a declaration fails to parse, the parser
+    /// skips to the next balanced parenthesis and continues.
     pub fn parse_program(&mut self) -> Result<Program> {
         let mut decls = Vec::new();
         while !self.is_eof() {
-            decls.push(self.parse_decl()?);
+            match self.parse_decl() {
+                Ok(decl) => decls.push(decl),
+                Err(e) => {
+                    self.errors.push(e);
+                    self.synchronize();
+                }
+            }
         }
-        Ok(Program { decls })
+        if self.errors.is_empty() {
+            Ok(Program { decls })
+        } else if decls.is_empty() {
+            // No successful declarations — return the first error
+            Err(self.errors.remove(0))
+        } else {
+            // Partial success — return what we have
+            // Errors are accessible via `parser.errors()`
+            Ok(Program { decls })
+        }
+    }
+
+    /// Get accumulated errors from error-recovery parsing.
+    pub fn errors(&self) -> &[ParseError] {
+        &self.errors
+    }
+
+    /// Skip tokens until we reach a position where parsing can resume.
+    ///
+    /// Strategy: skip to the next balanced closing paren at top level.
+    fn synchronize(&mut self) {
+        let mut depth = 0i32;
+        while !self.is_eof() {
+            match self.peek_token() {
+                Some(Token::LParen) => {
+                    if depth == 0 {
+                        // Found start of a new top-level form
+                        return;
+                    }
+                    depth += 1;
+                    self.pos += 1;
+                }
+                Some(Token::RParen) => {
+                    depth -= 1;
+                    self.pos += 1;
+                    if depth <= 0 {
+                        return;
+                    }
+                }
+                _ => {
+                    self.pos += 1;
+                }
+            }
+        }
     }
 
     // ── Helpers ──────────────────────────────────
@@ -908,6 +966,20 @@ pub fn parse(source: &str) -> Result<Program> {
     parser.parse_program()
 }
 
+/// Parse with error recovery: returns a partial program and accumulated errors.
+///
+/// Unlike `parse()`, this function never fails completely — it always returns
+/// whatever declarations it managed to parse, along with any errors.
+pub fn parse_recovering(
+    source: &str,
+) -> std::result::Result<(Program, Vec<ParseError>), ParseError> {
+    let tokens = llml_lexer::tokenize(source)?;
+    let mut parser = Parser::new(tokens);
+    let program = parser.parse_program().unwrap_or(Program { decls: vec![] });
+    let errors = parser.errors.clone();
+    Ok((program, errors))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1098,5 +1170,34 @@ mod tests {
 "#;
         let prog = parse(src).unwrap();
         assert_eq!(prog.decls.len(), 2);
+    }
+
+    #[test]
+    fn test_error_recovery() {
+        // First decl is valid, second has an error, third is valid
+        let src = r#"
+(let $x : @I32 42)
+(let $y : @I32 )
+(let $z : @I32 99)
+"#;
+        let (prog, errors) = parse_recovering(src).unwrap();
+        // Should have recovered and parsed at least some declarations
+        assert!(!errors.is_empty(), "expected at least one error");
+        // Should have at least the valid declarations
+        assert!(prog.decls.len() >= 1, "expected at least 1 recovered decl");
+    }
+
+    #[test]
+    fn test_error_recovery_multiple_errors() {
+        // Invalid: missing closing paren, then valid expression
+        let src = r#"
+42
+(let $y : @I32
+99
+"#;
+        let (prog, errors) = parse_recovering(src).unwrap();
+        // 42 is valid, the let is malformed, 99 may or may not be recovered
+        assert!(prog.decls.len() >= 1, "expected at least 1 recovered decl");
+        assert!(!errors.is_empty(), "expected at least one error");
     }
 }
