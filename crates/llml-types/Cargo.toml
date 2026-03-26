@@ -1,0 +1,11 @@
+[package]
+name = "llml-types"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+llml-lexer = { path = "../llml-lexer" }
+llml-parser = { path = "../llml-parser" }
+llml-stdlib = { path = "../llml-stdlib" }
+thiserror.workspace = true
+miette.workspace = true
