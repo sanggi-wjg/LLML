@@ -107,7 +107,7 @@ fn collect_decl(ctx: &mut TypeContext, decl: &Decl) {
             }
         }
         Decl::Pub(inner) => collect_decl(ctx, &inner.inner),
-        Decl::Let(_) | Decl::Expr(_) => {}
+        Decl::Let(_) | Decl::Expr(_) | Decl::Error => {}
     }
 }
 
@@ -225,6 +225,7 @@ fn check_decl(ctx: &mut TypeContext, decl: &Decl, span: Span) {
         Decl::Expr(expr) => {
             infer_expr(ctx, expr, span);
         }
+        Decl::Error => {}
     }
 }
 
@@ -487,6 +488,7 @@ pub fn infer_expr(ctx: &mut TypeContext, expr: &Expr, span: Span) -> Type {
                 ctx.fresh_var()
             }
         }
+        Expr::Error => Type::Error,
     }
 }
 

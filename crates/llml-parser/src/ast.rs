@@ -34,6 +34,8 @@ pub enum Decl {
     Pub(Box<Node<Decl>>),
     /// A bare expression at the top level
     Expr(Expr),
+    /// Error node for parser recovery
+    Error,
 }
 
 /// Function declaration.
@@ -183,6 +185,9 @@ pub enum Expr {
 
     /// Module-qualified access: #mod.$name
     ModAccess(String, String),
+
+    /// Error node for parser recovery
+    Error,
 }
 
 /// Match arm: ($pattern $body)

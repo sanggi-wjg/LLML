@@ -58,6 +58,24 @@ impl Parser {
         &self.errors
     }
 
+    fn synchronize_current_form(&mut self) {
+        let mut depth = 1i32;
+        while !self.is_eof() {
+            let token = self.tokens[self.pos].token.clone();
+            self.pos += 1;
+            match token {
+                Token::LParen => depth += 1,
+                Token::RParen => {
+                    depth -= 1;
+                    if depth <= 0 {
+                        return;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
     /// Skip tokens until we reach a position where parsing can resume.
     ///
     /// Strategy: skip to the next balanced closing paren at top level.
@@ -193,6 +211,18 @@ impl Parser {
     }
 
     fn parse_decl_inner(&mut self, start: Span) -> Result<Node<Decl>> {
+        match self.try_parse_decl_inner(start) {
+            Ok(node) => Ok(node),
+            Err(e) => {
+                self.errors.push(e);
+                self.synchronize_current_form();
+                let end = self.current_span().end;
+                Ok(Node::new(Decl::Error, Span::new(start.start, end)))
+            }
+        }
+    }
+
+    fn try_parse_decl_inner(&mut self, start: Span) -> Result<Node<Decl>> {
         let keyword = self.peek_token().cloned();
         match keyword {
             Some(Token::Fn) => {
@@ -679,6 +709,18 @@ impl Parser {
 
     /// Parse an expression after the opening `(` has been consumed.
     fn parse_expr_after_lparen(&mut self, start: Span) -> Result<Node<Expr>> {
+        match self.try_parse_expr_after_lparen(start) {
+            Ok(node) => Ok(node),
+            Err(e) => {
+                self.errors.push(e);
+                self.synchronize_current_form();
+                let end = self.current_span().end;
+                Ok(Node::new(Expr::Error, Span::new(start.start, end)))
+            }
+        }
+    }
+
+    fn try_parse_expr_after_lparen(&mut self, start: Span) -> Result<Node<Expr>> {
         match self.peek_token().cloned() {
             // (if $cond $then $else)
             Some(Token::If) => {

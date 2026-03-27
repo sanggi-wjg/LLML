@@ -102,6 +102,7 @@ impl Interpreter {
             }
             Decl::Pub(inner) => self.exec_decl(&inner.inner),
             Decl::Expr(expr) => self.eval_expr(expr),
+            Decl::Error => Ok(Value::Nil),
         }
     }
 
@@ -244,6 +245,7 @@ impl Interpreter {
                     .cloned()
                     .ok_or_else(|| EvalError::UndefinedVar(var_name.clone()))
             }
+            Expr::Error => Ok(Value::Nil),
         }
     }
 

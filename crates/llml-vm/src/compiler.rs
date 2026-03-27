@@ -126,6 +126,7 @@ fn compile_decl(scope: &mut CompilerScope, decl: &Decl, span: Span) -> Result<()
             // Keep the result on stack (it's the "last value")
             Ok(())
         }
+        Decl::Error => Ok(()),
     }
 }
 
@@ -454,6 +455,7 @@ fn compile_expr(scope: &mut CompilerScope, expr: &Expr, span: Span) -> Result<()
                 return Err(CompileError(format!("undefined module member: {member}")));
             }
         }
+        Expr::Error => {}
     }
     Ok(())
 }
